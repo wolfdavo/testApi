@@ -1,36 +1,86 @@
 <!DOCTYPE html>
 <html>
-    <body onload="getArgs()">
-        <p id="request"></p>
+    <body onload="handleRequest()">
         <p id="response"></p>
 
         <script>
-            function getArgs() {
-                //Response JSON
-                let response = {}
+            function handleRequest() {
     
-                //Immediately set resonse object to "working"
-                response = {
-                    status: "working"
-                }
-                document.getElementById("response").innerHTML = "Response: " + JSON.stringify(response);
-    
-                //Now parse the query and convert to JSON
-                var kvPairs = location.search.slice(1).split('&');
+                //Get request body object from string query
                 let request = {};
+                var kvPairs = location.search.slice(1).split('&');
                 kvPairs.forEach((pair) => {
                     pair = pair.split('=');
                     request[pair[0]] = decodeURIComponent(pair[1] || '');
                 });
     
-                document.getElementById("request").innerHTML = "Request: " + JSON.stringify(request);
+                //Set status to working. This tells the front end to continue polling (scraping) for changes. Helpful for asynchronous or heavy workloads.
+                res({
+                    status: 300,
+                    message: 'working'
+                })
+
+                //Switch case for different endpoints
+                switch (request?.endpoint) {
+                    //Checking connection
+                    case 'checkConnection':
+                        //Client is just making sure they can communicate, so respond status good.
+                        res({
+                            status: 200,
+                            message: 'connected'
+                        });
+                        break;
+
+
+                    //Serve an array of network objects that have an SSID and RSSI
+                    case 'getNetworks':
+                        //Get networks
+                        let rawNetworks = [{SSID:'Network 1',RSSI:'10'}, {SSID:'Network 2',RSSI:'7'}, {SSID:'Network 3',RSSI:'5'}, {SSID:'Network 4',RSSI:'2'}];
+
+                        //Print to DOM so frontend can scrape
+                        res({
+                            status: 200,
+                            message: 'success',
+                            networks: rawNetworks
+                        });
+
+                        break;
+
+
+                    case 'connectToNetwork':
+                        //Make sure they sent an SSID in the request
+                        if (!!request?.SSID ) {
+                            //Try to connect to network here
+                            res({
+                                status: 200,
+                                message: 'Attempting connection to ' + request.SSID
+                            })
+                        } 
+
+                        else {
+                            //Bad request
+                            res({
+                                status: 400,
+                                message: 'BAD_REQUEST'
+                            })
+                        }
+                        
+                
+                    default:
+                        //Bad request. Either no endpoint or invalid endpoint name
+                        res({
+                            status: 400,
+                            message: 'BAD_REQUEST'
+                        })
+                        break;
+                }
     
-                setTimeout(() => {
-                    response.status = "good";
-                    document.getElementById("response").innerHTML = "Response: " + JSON.stringify(response);
-                }, 3000);
-    
-                //document.getElementById('response').innerHTML = ;
+            }
+
+
+            //Print endpoint response to DOM for the client to pick up with scraper
+            function res(body) {
+                document.getElementById("response").innerHTML = JSON.stringify(body);
             }
         </script>
     </body>
