@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <body onload="getArgs()">
+        <p id="request"></p>
+        <p id="response"></p>
+
+        <script>
+            function getArgs() {
+                //Response JSON
+                let response = {}
+    
+                //Immediately set resonse object to "working"
+                response = {
+                    status: "working"
+                }
+                document.getElementById("response").innerHTML = "Response: " + JSON.stringify(response);
+    
+                //Now parse the query and convert to JSON
+                var kvPairs = location.search.slice(1).split('&');
+                let request = {};
+                kvPairs.forEach((pair) => {
+                    pair = pair.split('=');
+                    request[pair[0]] = decodeURIComponent(pair[1] || '');
+                });
+    
+                document.getElementById("request").innerHTML = "Request: " + JSON.stringify(request);
+    
+                setTimeout(() => {
+                    response.status = "good";
+                    document.getElementById("response").innerHTML = "Response: " + JSON.stringify(response);
+                }, 3000);
+    
+                //document.getElementById('response').innerHTML = ;
+            }
+        </script>
+    </body>
+</html>
