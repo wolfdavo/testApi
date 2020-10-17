@@ -15,7 +15,7 @@
                 });
     
                 //Set status to working. This tells the front end to continue polling (scraping) for changes. Helpful for asynchronous or heavy workloads.
-                res({
+                resPrint({
                     status: 300,
                     message: 'working'
                 })
@@ -25,7 +25,7 @@
                     //Checking connection
                     case 'checkConnection':
                         //Client is just making sure they can communicate, so respond status good.
-                        res({
+                        resPrint({
                             status: 200,
                             message: 'connected'
                         });
@@ -43,7 +43,7 @@
                         let rawNetworks = [{SSID:'Network 1',RSSI:'10'}, {SSID:'Network 2',RSSI:'7'}, {SSID:'Network 3',RSSI:'5'}, {SSID:'Network 4',RSSI:'2'}];
 
                         //Print to DOM so frontend can scrape
-                        res({
+                        resPrint({
                             status: 200,
                             message: 'success',
                             networks: rawNetworks
@@ -60,12 +60,10 @@
                     
                     case 'listenForNetworks':
                         setInterval(() => {
-                            window.ReactNativeWebView.postMessage(JSON.stringify({
-                                status: 200,
+                            res({
                                 endpoint: 'listenForNetworks',
-                                message: 'success',
-                                networks: rawNetworks 
-                            }));
+                                status: 200
+                            })
                         }, 3000)
                         break;
 
@@ -74,7 +72,7 @@
                         //Make sure they sent an SSID in the request
                         if (!!request?.SSID ) {
                             //Try to connect to network here
-                            res({
+                            resPrint({
                                 status: 200,
                                 message: 'Attempting connection to ' + request.SSID
                             })
@@ -82,7 +80,7 @@
 
                         else {
                             //Bad request
-                            res({
+                            resPrint({
                                 status: 400,
                                 message: 'BAD_REQUEST'
                             })
@@ -92,7 +90,7 @@
                 
                     default:
                         //Bad request. Either no endpoint or invalid endpoint name
-                        res({
+                        resPrint({
                             status: 400,
                             message: 'BAD_REQUEST'
                         })
@@ -103,8 +101,12 @@
 
 
             //Print endpoint response to DOM for the client to pick up with scraper
-            function res(body) {
+            function resPrint(body) {
                 document.getElementById("response").innerHTML = JSON.stringify(body);
+            }
+
+            function res(body) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({ ...body }));
             }
         </script>
     </body>
