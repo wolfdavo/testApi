@@ -49,6 +49,13 @@
                             networks: rawNetworks
                         });
 
+                        window.ReactNativeWebView.postMessage(JSON.stringify({
+                            status: 200,
+                            endpoint: 'getNetworks',
+                            message: 'success',
+                            networks: rawNetworks 
+                        }));
+
                         break;
 
 
