@@ -29,7 +29,11 @@
                             status: 200,
                             message: 'connected'
                         });
-                        window.ReactNativeWebView.postMessage("Hello from the ESP!");
+                        window.ReactNativeWebView.postMessage(JSON.stringify({
+                            status: 200,
+                            endpoint: 'checkConnection',
+                            message: 'connected'
+                        }));
                         break;
 
 
