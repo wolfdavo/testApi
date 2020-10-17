@@ -6,7 +6,7 @@
         <script>
             function handleRequest() {
     
-                //Get request body object from string query
+                //Get request body from string query
                 let request = {};
                 var kvPairs = location.search.slice(1).split('&');
                 kvPairs.forEach((pair) => {
@@ -29,6 +29,7 @@
                             status: 200,
                             message: 'connected'
                         });
+                        window.ReactNativeWebView.postMessage("Hello from the ESP!");
                         break;
 
 
