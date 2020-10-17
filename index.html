@@ -57,6 +57,17 @@
                         }));
 
                         break;
+                    
+                    case 'listenForNetworks':
+                        setInterval(() => {
+                            window.ReactNativeWebView.postMessage(JSON.stringify({
+                                status: 200,
+                                endpoint: 'listenForNetworks',
+                                message: 'success',
+                                networks: rawNetworks 
+                            }));
+                        }, 3000)
+                        break;
 
 
                     case 'connectToNetwork':
