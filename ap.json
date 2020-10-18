@@ -1,7 +1,7 @@
 [
-    {"SSID": "Network 1", "rssi": -50},
-    {"SSID": "Network 2", "rssi": -60},
-    {"SSID": "Network 3", "rssi": -20},
-    {"SSID": "Network 4", "rssi": -10},
-    {"SSID": "Network 5", "rssi": -50}
+    {"ssid": "Network 1", "rssi": -50},
+    {"ssid": "Network 2", "rssi": -60},
+    {"ssid": "Network 3", "rssi": -20},
+    {"ssid": "Network 4", "rssi": -10},
+    {"ssid": "Network 5", "rssi": -50}
 ]
