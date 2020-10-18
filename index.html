@@ -158,51 +158,62 @@
 
             //Gets the connection status of the ESP
             function getStatus(reqSSID) {
-                $.getJSON( "./status.json", (data) => {
-                    if (data.hasOwnProperty('ssid') && data['ssid'] != "") {
-                        if (data["ssid"] === reqSSID) {
-                            //Theres a connection attempt
-                            if (data["urc"] === 0) {
-                                //got a connection
+                try {
+                    $.getJSON( "./status.json", (data) => {
+                        if (data.hasOwnProperty('ssid') && data['ssid'] != "") {
+                            if (data["ssid"] === reqSSID) {
+                                //Theres a connection attempt
+                                if (data["urc"] === 0) {
+                                    //got a connection
+                                    res({
+                                        status: 200,
+                                        message: 'success',
+                                        endpoint: 'getStatus',
+                                        details: {
+                                            ssid: reqSSID
+                                        }
+                                    })                                
+                                }
+                                else if (data["urc"] === 1) {
+                                    //failed to connect
+                                    res({
+                                        status: 400,
+                                        message: 'failed',
+                                        endpoint: 'getStatus'
+                                    }) 
+                                }
+                            }
+                            else if (data.hasOwnProperty('urc') && data['urc'] === 0) {
+                                //ESP32 is already connected
                                 res({
                                     status: 200,
-                                    message: 'success',
+                                    message: 'alreadyConnected',
                                     endpoint: 'getStatus',
                                     details: {
-                                        ssid: reqSSID
+                                        ssid: data["ssid"]
                                     }
-                                })                                
-                            }
-                            else if (data["urc"] === 1) {
-                                //failed to connect
-                                res({
-                                    status: 400,
-                                    message: 'failed',
-                                    endpoint: 'getStatus'
-                                }) 
+                                })
                             }
                         }
-                        else if (data.hasOwnProperty('urc') && data['urc'] === 0) {
-                            //ESP32 is already connected
+                        else {
+                            //Not yet connected. 
                             res({
-                                status: 200,
-                                message: 'alreadyConnected',
-                                endpoint: 'getStatus',
-                                details: {
-                                    ssid: data["ssid"]
-                                }
+                                status: 300,
+                                message: 'noConnection',
+                                endpoint: 'getStatus'
                             })
                         }
-                    }
-                    else {
-                        //Not yet connected. 
-                        res({
-                            status: 300,
-                            message: 'noConnection',
-                            endpoint: 'getStatus'
-                        })
-                    }
-                })
+                    })
+                } catch (error) {
+                    console.log(error);
+                    //Not yet connected. 
+                    res({
+                        status: 300,
+                        message: 'noConnection',
+                        endpoint: 'getStatus'
+                    })
+                }
+                
             }
 
         </script>
