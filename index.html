@@ -42,10 +42,10 @@
                     
                     case 'listenForNetworks':                        
                         getAPs();   //Get and return data immediately
-                        //Update data every second
+                        //Update data every 5 seconds
                         setInterval(() => {
                             getAPs();
-                        }, 3000)
+                        }, 5000)
                         break;
 
 
