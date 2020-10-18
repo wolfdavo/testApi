@@ -35,6 +35,19 @@
                         });
                         break;
 
+                    case 'getStatus':
+                        getStatus(request?.SSID);
+                        break;
+
+                    case 'listenForStatus':
+                        //return status right away
+                        getStatus(request?.SSID);
+                        //then start listening and updating every 2 seconds
+                        setInterval(() => {
+                            getStatus(request?.SSID);
+                        }, 2000)
+                        break;
+
                     case 'getNetworks':
                         //Get networks
                         getAPs();
@@ -50,20 +63,42 @@
 
 
                     case 'connectToNetwork':
-                        //Make sure they sent an SSID in the request
-                        if (!!request?.SSID ) {
+                        //Make sure they sent an SSID, password is optional
+                        if (!!request?.SSID) {
                             //Try to connect to network here
-                            resPrint({
+                            try {
+                                $.ajax({
+                                    url: './connect.json',
+                                    dataType: 'json',
+                                    method: 'POST',
+                                    cache: false,
+                                    headers: { 'X-Custom-ssid': request.SSID, 'X-Custom-pwd': !!request?.password ? request.password : ''},
+                                    data: { 'timestamp': Date.now()}
+                                });
+                            } catch (error) {
+                                //Failure to post data to connect.json
+                                res({
+                                    status: 500,
+                                    endpoint: 'connectToNetwork',
+                                    message: 'Error sending connection request to connect.json',
+                                    details: error
+                                })
+                            }
+                            //Connection successfully requested
+                            res({
                                 status: 200,
+                                endpoint: 'connectToNetwork',
                                 message: 'Attempting connection to ' + request.SSID
                             })
                         } 
 
                         else {
                             //Bad request
-                            resPrint({
+                            res({
                                 status: 400,
-                                message: 'BAD_REQUEST'
+                                endpoint: 'connectToNetwork',
+                                message: 'BAD_REQUEST',
+                                details: 'request.SSID cannot be undefined'
                             })
                         }
                         break;
@@ -73,7 +108,8 @@
                         //Bad request. Either no endpoint or invalid endpoint name
                         res({
                             status: 400,
-                            message: 'BAD_REQUEST'
+                            message: 'BAD_REQUEST',
+                            details: 'Either no endpoint specified or invalid endpoint name.'
                         })
                         break;
                 }
@@ -116,6 +152,55 @@
                             endpoint: 'listenForNetworks',
                             networks: []
                         });
+                    }
+                })
+            }
+
+            //Gets the connection status of the ESP
+            function getStatus(reqSSID) {
+                $.getJSON( "./status.json", (data) => {
+                    if (data.hasOwnProperty('ssid') && data['ssid'] != "") {
+                        if (data["ssid"] === reqSSID) {
+                            //Theres a connection attempt
+                            if (data["urc"] === 0) {
+                                //got a connection
+                                res({
+                                    status: 200,
+                                    message: 'success',
+                                    endpoint: 'getStatus',
+                                    details: {
+                                        ssid: reqSSID
+                                    }
+                                })                                
+                            }
+                            else if (data["urc"] === 1) {
+                                //failed to connect
+                                res({
+                                    status: 400,
+                                    message: 'failed',
+                                    endpoint: 'getStatus'
+                                }) 
+                            }
+                        }
+                        else if (data.hasOwnProperty('urc') && data['urc'] === 0) {
+                            //ESP32 is already connected
+                            res({
+                                status: 200,
+                                message: 'alreadyConnected',
+                                endpoint: 'getStatus',
+                                details: {
+                                    ssid: data["ssid"]
+                                }
+                            })
+                        }
+                    }
+                    else {
+                        //Not yet connected. 
+                        res({
+                            status: 300,
+                            message: 'noConnection',
+                            endpoint: 'getStatus'
+                        })
                     }
                 })
             }
