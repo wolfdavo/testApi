@@ -64,13 +64,28 @@
                     
                     case 'listenForNetworks':
                         //Get and return data immediately
-                        let aps = await getAPs();
-                        resPrint(aps);
+                        $.getJSON('./ap.json', (data) => {
+                            if(data.length > 0){
+                                //sort by signal strength
+                                data.sort(function (a, b) {
+                                    var x = a["rssi"]; var y = b["rssi"];
+                                    return ((x < y) ? 1 : ((x > y) ? -1 : 0));
+                                });
+                            }
+                            resPrint(data);
+                        })
 
                         //Update data every second
                         setInterval(() => {
-                            let aps = await getAPs();
-                            console.log(aps);
+                            $.getJSON('./ap.json', (data) => {
+                                if(data.length > 0){
+                                    //sort by signal strength
+                                    data.sort(function (a, b) {
+                                        var x = a["rssi"]; var y = b["rssi"];
+                                        return ((x < y) ? 1 : ((x > y) ? -1 : 0));
+                                    });
+                                }
+                            })
                         }, 3000)
                         break;
 
@@ -116,20 +131,6 @@
             //Send data to react native client
             function res(body) {
                 window.ReactNativeWebView.postMessage(JSON.stringify({ ...body }));
-            }
-
-            //Get access points from ap.json. Sorted by rssi. Returns stringified JSON.
-            async function getAPs() {
-                $.getJSON('./ap.json', (data) => {
-                    if(data.length > 0){
-                        //sort by signal strength
-                        data.sort(function (a, b) {
-                            var x = a["rssi"]; var y = b["rssi"];
-                            return ((x < y) ? 1 : ((x > y) ? -1 : 0));
-                        });
-                    }
-                    Promise.resolve(JSON.stringify(data));
-                })
             }
 
         </script>
