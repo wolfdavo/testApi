@@ -8,7 +8,7 @@
         <p style="font-size:xx-large;" id="response"></p>
 
         <script>
-            function handleRequest() {
+            async function handleRequest() {
     
                 //Get request body from string query
                 let request = {};
@@ -64,11 +64,13 @@
                     
                     case 'listenForNetworks':
                         //Get and return data immediately
-                        resPrint(getAPs());
+                        let aps = await getAPs();
+                        resPrint(aps);
 
                         //Update data every second
                         setInterval(() => {
-                            console.log(getAPs());
+                            let aps = await getAPs();
+                            console.log(aps);
                         }, 3000)
                         break;
 
@@ -117,8 +119,8 @@
             }
 
             //Get access points from ap.json. Sorted by rssi. Returns stringified JSON.
-            function getAPs() {
-                $.getJSON('./ap.json', (data) => {
+            async function getAPs() {
+                return await $.getJSON('./ap.json', (data) => {
                     if(data.length > 0){
                         //sort by signal strength
                         data.sort(function (a, b) {
