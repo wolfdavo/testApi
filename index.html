@@ -64,35 +64,11 @@
                     
                     case 'listenForNetworks':
                         //Get and return data immediately
-                        $.getJSON('./ap.json', (data) => {
-                            if(data.length > 0){
-                                //sort by signal strength
-                                data.sort(function (a, b) {
-                                    var x = a["rssi"]; var y = b["rssi"];
-                                    return ((x < y) ? 1 : ((x > y) ? -1 : 0));
-                                });
-                                console.log(JSON.stringify(data));
-                            }
-                            resPrint(data)
-                        })
+                        resPrint(getAPs());
 
                         //Update data every second
                         setInterval(() => {
-                            $.getJSON('./ap.json', (data) => {
-                                if(data.length > 0){
-                                    //sort by signal strength
-                                    data.sort(function (a, b) {
-                                        var x = a["rssi"]; var y = b["rssi"];
-                                        return ((x < y) ? 1 : ((x > y) ? -1 : 0));
-                                    });
-                                    console.log(JSON.stringify(data));
-                                }
-                                resPrint(data)
-                            })
-                            res({
-                                endpoint: 'listenForNetworks',
-                                status: 200
-                            })
+                            console.log(getAPs());
                         }, 3000)
                         break;
 
@@ -129,14 +105,32 @@
             }
 
 
-            //Print endpoint response to DOM for the client to pick up with scraper
+            // HELPERS
+            //Print endpoint response to DOM for easy debugging
             function resPrint(body) {
                 document.getElementById("response").innerHTML = JSON.stringify(body);
             }
 
+            //Send data to react native client
             function res(body) {
                 window.ReactNativeWebView.postMessage(JSON.stringify({ ...body }));
             }
+
+            //Get access points from ap.json. Sorted by rssi. Returns stringified JSON.
+            function getAPs() {
+                $.getJSON('./ap.json', (data) => {
+                    if(data.length > 0){
+                        //sort by signal strength
+                        data.sort(function (a, b) {
+                            var x = a["rssi"]; var y = b["rssi"];
+                            return ((x < y) ? 1 : ((x > y) ? -1 : 0));
+                        });
+                    }
+
+                    return JSON.stringify(data);
+                })
+            }
+
         </script>
     </body>
 </html>
