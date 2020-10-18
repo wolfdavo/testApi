@@ -72,8 +72,16 @@
                                     return ((x < y) ? 1 : ((x > y) ? -1 : 0));
                                 });
                             }
-                            resPrint(JSON.stringify(data));
-                            res(JSON.stringify(data));
+                            resPrint(JSON.stringify({
+                                status: 200,
+                                endpoint: 'listenForNetworks',
+                                networks: data
+                            }));
+                            res(JSON.stringify({
+                                status: 200,
+                                endpoint: 'listenForNetworks',
+                                networks: data
+                            }));
                         })
 
                         //Update data every second
