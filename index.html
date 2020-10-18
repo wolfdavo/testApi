@@ -60,6 +60,17 @@
                     
                     case 'listenForNetworks':
                         setInterval(() => {
+                            $.getJSON('./ap.json', (data) => {
+                                if(data.length > 0){
+                                    //sort by signal strength
+                                    data.sort(function (a, b) {
+                                        var x = a["rssi"]; var y = b["rssi"];
+                                        return ((x < y) ? 1 : ((x > y) ? -1 : 0));
+                                    });
+                                    console.log(JSON.stringify(data));
+                                }
+                                resPrint({...data})
+                            })
                             res({
                                 endpoint: 'listenForNetworks',
                                 status: 200

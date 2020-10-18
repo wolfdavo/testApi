@@ -1,0 +1,7 @@
+[
+    {"SSID": "Network 1", "RSSI": -50},
+    {"SSID": "Network 2", "RSSI": -60},
+    {"SSID": "Network 3", "RSSI": -20},
+    {"SSID": "Network 4", "RSSI": -10},
+    {"SSID": "Network 5", "RSSI": -50}
+]
