@@ -8,7 +8,7 @@
         <p style="font-size:xx-large;" id="response"></p>
 
         <script>
-            async function handleRequest() {
+            function handleRequest() {
     
                 //Get request body from string query
                 let request = {};
@@ -90,7 +90,7 @@
             //Send data to react native client
             function res(body) {
                 resPrint(body);
-                window.ReactNativeWebView.postMessage(JSON.stringify({ ...body }));
+                window.ReactNativeWebView.postMessage(JSON.stringify(body));
             }
 
             //Gets available networks from ap.json. Sorts by signal strength. Sends response to client.
@@ -103,18 +103,18 @@
                             return ((x < y) ? 1 : ((x > y) ? -1 : 0));
                         });
                         //Send to client
-                        res(JSON.stringify({
+                        res({
                             status: 200,
                             endpoint: 'listenForNetworks',
                             networks: data
-                        }));
+                        });
                     }
                     //Send to client
-                    res(JSON.stringify({
+                    res({
                         status: 200,
                         endpoint: 'listenForNetworks',
                         networks: []
-                    }));
+                    });
                 })
             }
 
