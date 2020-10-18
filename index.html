@@ -109,12 +109,14 @@
                             networks: data
                         });
                     }
-                    //Send to client
-                    res({
-                        status: 200,
-                        endpoint: 'listenForNetworks',
-                        networks: []
-                    });
+                    else{
+                        //Send to client
+                        res({
+                            status: 200,
+                            endpoint: 'listenForNetworks',
+                            networks: []
+                        });
+                    }
                 })
             }
 
